@@ -24,7 +24,8 @@ apps/ui/
 │   ├── main.tsx
 │   └── index.css         # Tailwind v4 import + shadcn CSS variables
 ├── components.json       # shadcn config
-└── vite.config.ts        # also defines a Vitest browser-mode project for Storybook tests
+├── eslint.config.js      # flat config: typescript-eslint + react-hooks + react-refresh
+└── vite.config.ts
 ```
 
 `src/stories/` contains Storybook's init demo files (Button, Header, Page). They are unrelated to real components and can be deleted.
@@ -35,6 +36,8 @@ Run from repo root (or `apps/ui/`):
 
 - `pnpm dev` — Vite dev server with HMR on http://localhost:5173
 - `pnpm build` — type-check then build to `dist/`
+- `pnpm typecheck` — `tsc -b` only
+- `pnpm lint` — ESLint (flat config)
 - `pnpm storybook` — Storybook on http://localhost:6006
 - `pnpm build-storybook` — static Storybook build
 
@@ -54,4 +57,4 @@ pnpm --filter ui dlx shadcn@latest add <name>
 ## Gotchas
 
 - This folder is under OneDrive. `pnpm install` has occasionally hit `EBUSY` symlink errors on first run because OneDrive is syncing. Re-running `pnpm install` resolves it; pausing OneDrive sync for the repo is the durable fix.
-- Storybook init pulled in Playwright + `@vitest/browser-playwright` for `addon-vitest`'s browser-mode component testing. If browser-based component tests aren't wanted, those deps and the `test.projects` block in `vite.config.ts` can be removed.
+- The canonical shadcn `button.tsx` exports `buttonVariants` (a `cva` function) alongside the `Button` component, which trips `react-refresh/only-export-components` as a warning. Left as-is — splitting the file would fight the shadcn convention.

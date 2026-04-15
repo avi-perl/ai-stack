@@ -23,8 +23,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Lint (eslint)
+        run: pnpm --filter ui lint
+
       - name: Typecheck (tsc)
-        run: pnpm --filter ui exec tsc -b
+        run: pnpm --filter ui typecheck
 
       - name: Build
         run: pnpm --filter ui build

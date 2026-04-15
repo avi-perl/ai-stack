@@ -28,9 +28,10 @@ test: ## Run API tests
 e2e: ## Run end-to-end browser tests (requires services running, e.g. via `make dev`)
 	uv run --directory tests/e2e pytest
 
-lint: ## Lint Python with ruff
+lint: ## Lint Python (ruff) and UI (eslint)
 	uv run ruff check .
 	uv run ruff format --check .
+	pnpm --filter ui lint
 
 format: ## Format Python with ruff
 	uv run ruff format .
@@ -38,7 +39,7 @@ format: ## Format Python with ruff
 
 typecheck: ## Typecheck Python (ty) and UI (tsc)
 	uv run ty check
-	pnpm --filter ui exec tsc -b
+	pnpm --filter ui typecheck
 
 storybook: ## Run Storybook
 	pnpm --filter ui storybook
