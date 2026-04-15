@@ -1,0 +1,16 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.6
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: eslint
+        name: eslint
+        language: system
+        entry: pnpm --filter ui lint
+        files: ^apps/ui/.*\.(ts|tsx|js|jsx)$
+        pass_filenames: false
