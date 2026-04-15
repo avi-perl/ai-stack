@@ -4,10 +4,12 @@ UI_PORT ?= 5173
 API_PORT ?= 8000
 API_HOST ?= 127.0.0.1
 
-.PHONY: help install hooks ui api dev test e2e lint format typecheck storybook build build-storybook clean
+.PHONY: help setup install hooks playwright ui api dev test e2e lint format typecheck storybook build build-storybook clean
 
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+setup: install hooks playwright ## One-shot: install deps, git hooks, and Playwright browsers
 
 install: ## Install all dependencies (pnpm + uv)
 	pnpm install
@@ -15,6 +17,9 @@ install: ## Install all dependencies (pnpm + uv)
 
 hooks: ## Install git pre-commit hooks
 	uv run pre-commit install
+
+playwright: ## Install Playwright browsers for e2e tests
+	uv run --directory tests/e2e playwright install chromium
 
 ui: ## Run the UI dev server
 	pnpm --filter ui dev
