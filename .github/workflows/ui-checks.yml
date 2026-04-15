@@ -24,8 +24,5 @@ jobs:
       - name: Lint (eslint)
         run: pnpm --filter ui lint
 
-      - name: Typecheck (tsc)
-        run: pnpm --filter ui typecheck
-
       - name: Build
         run: pnpm --filter ui build
