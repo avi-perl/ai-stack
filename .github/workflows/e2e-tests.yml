@@ -1,0 +1,78 @@
+name: E2E tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Sync Python dependencies
+        run: uv sync --all-packages
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: uv run --directory tests/e2e playwright install --with-deps chromium
+
+      - name: Start API
+        run: |
+          uv run --directory apps/api uvicorn api.main:app --host 127.0.0.1 --port 8000 > api.log 2>&1 &
+          echo "API_PID=$!" >> "$GITHUB_ENV"
+
+      - name: Start UI
+        run: |
+          pnpm --filter ui dev > ui.log 2>&1 &
+          echo "UI_PID=$!" >> "$GITHUB_ENV"
+
+      - name: Wait for services
+        run: |
+          for i in {1..60}; do
+            if curl -sf http://127.0.0.1:8000/health > /dev/null && curl -sf http://localhost:5173/ > /dev/null; then
+              echo "Services ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::Services failed to start within 60s"
+          echo "--- api.log ---"
+          cat api.log || true
+          echo "--- ui.log ---"
+          cat ui.log || true
+          exit 1
+
+      - name: Run e2e tests
+        run: uv run --directory tests/e2e pytest
+
+      - name: Stop services
+        if: always()
+        run: |
+          [ -n "${API_PID:-}" ] && kill "$API_PID" 2>/dev/null || true
+          [ -n "${UI_PID:-}" ] && kill "$UI_PID" 2>/dev/null || true
+
+      - name: Upload service logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: service-logs
+          path: |
+            api.log
+            ui.log
