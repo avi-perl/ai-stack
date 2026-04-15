@@ -1,0 +1,12 @@
+{
+  "name": "ai-stack",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter ui dev",
+    "build": "pnpm --filter ui build",
+    "storybook": "pnpm --filter ui storybook",
+    "build-storybook": "pnpm --filter ui build-storybook"
+  },
+  "packageManager": "pnpm@10.33.0"
+}
