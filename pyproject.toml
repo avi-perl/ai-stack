@@ -1,6 +1,13 @@
 [project]
 name = "ai-stack"
 version = "0.1.0"
-description = "Add your description here"
+description = "ai-stack monorepo root"
 requires-python = ">=3.13"
 dependencies = []
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["apps/*"]
+exclude = ["apps/ui"]
