@@ -9,5 +9,5 @@ dependencies = []
 package = false
 
 [tool.uv.workspace]
-members = ["apps/*"]
+members = ["apps/*", "tests/e2e"]
 exclude = ["apps/ui"]

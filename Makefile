@@ -4,7 +4,7 @@ UI_PORT ?= 5173
 API_PORT ?= 8000
 API_HOST ?= 127.0.0.1
 
-.PHONY: help install ui api dev test storybook build build-storybook clean
+.PHONY: help install ui api dev test e2e storybook build build-storybook clean
 
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -24,6 +24,9 @@ dev: ## Run api + ui + storybook in parallel (Ctrl+C stops all)
 
 test: ## Run API tests
 	uv run --directory apps/api pytest
+
+e2e: ## Run end-to-end browser tests (requires services running, e.g. via `make dev`)
+	uv run --directory tests/e2e pytest
 
 storybook: ## Run Storybook
 	pnpm --filter ui storybook
